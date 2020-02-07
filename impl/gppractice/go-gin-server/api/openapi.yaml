@@ -1,0 +1,117 @@
+openapi: 3.0.2
+info:
+  description: |
+    ## API for GP Practice lookups
+  title: GP Practice API
+  version: 1.0.0
+servers:
+- url: http://gppractice.com/api/gp
+tags:
+- name: GP Practice
+paths:
+  /GPRecord/:
+    get:
+      description: GP registered with the current practice
+      operationId: getGPRecord
+      parameters:
+      - description: API version
+        explode: false
+        in: path
+        name: version
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: GMC Code for the GP
+        explode: false
+        in: path
+        name: gmcCode
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GPRecordResponse'
+                type: array
+          description: OK
+        400:
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Bad request errors
+        401:
+          description: Unauthorized
+        404:
+          description: GP GMC code not found
+      summary: Get GP Practices
+      tags:
+      - GP Practice
+  /AllGPRecords/:
+    get:
+      description: All GPs registered with the current practice
+      operationId: getAllGPRecords
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GPRecordResponse'
+                type: array
+          description: OK
+        400:
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Bad request errors
+        401:
+          description: Unauthorized
+        404:
+          description: GP GMC code not found
+      summary: Get All GP Practices
+      tags:
+      - GP Practice
+components:
+  schemas:
+    GPRecordResponse:
+      example:
+        address: address
+        name: name
+        practiceCode: practiceCode
+        postCode: postCode
+        gmcCode: gmcCode
+      properties:
+        gmcCode:
+          description: GMC Organisation Code
+          type: string
+        name:
+          description: GP Name
+          type: string
+        address:
+          description: Comma separated list of address lines
+          type: string
+        postCode:
+          description: PostCode of the GP
+          type: string
+        practiceCode:
+          description: NHS code for the practice
+          type: string
+      required:
+      - address
+      - gmcCode
+      - name
+      - postCode
+      - practiceCode
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
